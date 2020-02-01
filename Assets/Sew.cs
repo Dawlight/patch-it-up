@@ -24,8 +24,8 @@ public class Sew : MonoBehaviour
         _runMachine = GetComponent<RunMachine>();
         threadPoints = new List<Vector3>
         {
-            _runMachine.transform.localPosition, 
-            _runMachine.transform.localPosition
+            lineRenderer.transform.InverseTransformPoint(transform.position), 
+            lineRenderer.transform.InverseTransformPoint(transform.position)
         };
         lineRenderer.positionCount = 2;
         lineRenderer.SetPositions(threadPoints.ToArray());
@@ -35,12 +35,12 @@ public class Sew : MonoBehaviour
     {
         if (!_runMachine.isRunning) return;
 
-        threadPoints[threadPoints.Count - 1] = new Vector3(_runMachine.transform.localPosition.x, _runMachine.transform.localPosition.y, -0.01f);
-        lineRenderer.SetPosition(threadPoints.Count -1, _runMachine.transform.localPosition);
+        threadPoints[threadPoints.Count - 1] = new Vector3(lineRenderer.transform.InverseTransformPoint(transform.position).x, lineRenderer.transform.InverseTransformPoint(transform.position).y, -0.01f);
+        lineRenderer.SetPosition(threadPoints.Count -1, lineRenderer.transform.InverseTransformPoint(transform.position));
 
         if (_runMachine.hasCompletedCycle)
         {
-            threadPoints.Add(new Vector3(_runMachine.transform.localPosition.x, _runMachine.transform.localPosition.y, -0.01f));
+            threadPoints.Add(new Vector3(lineRenderer.transform.InverseTransformPoint(transform.position).x, lineRenderer.transform.InverseTransformPoint(transform.position).y, -0.01f));
             lineRenderer.positionCount = threadPoints.Count;
             lineRenderer.SetPositions(threadPoints.ToArray());
 
