@@ -11,6 +11,7 @@ public class Sew : MonoBehaviour
     public List<Vector3> threadPoints;
     [SerializeField] private LineRenderer lineRenderer;
     [SerializeField] private float stichWidth;
+    [SerializeField] private AnimationCurve needleHeightCurve;
 
     void Start()
     {
@@ -34,12 +35,12 @@ public class Sew : MonoBehaviour
     {
         if (!_runMachine.isRunning) return;
 
-        threadPoints[threadPoints.Count - 1] = _runMachine.transform.localPosition;
+        threadPoints[threadPoints.Count - 1] = new Vector3(_runMachine.transform.localPosition.x, _runMachine.transform.localPosition.y, -0.01f);
         lineRenderer.SetPosition(threadPoints.Count -1, _runMachine.transform.localPosition);
 
         if (_runMachine.hasCompletedCycle)
         {
-            threadPoints.Add(_runMachine.transform.localPosition);
+            threadPoints.Add(new Vector3(_runMachine.transform.localPosition.x, _runMachine.transform.localPosition.y, -0.01f));
             lineRenderer.positionCount = threadPoints.Count;
             lineRenderer.SetPositions(threadPoints.ToArray());
 
@@ -48,7 +49,9 @@ public class Sew : MonoBehaviour
             _endPosition = tempPosition;
         }
 
-        transform.position = Vector3.Lerp(_startPosition, _endPosition, _runMachine.lerpTime);
+        var transformPosition = Vector3.Lerp(_startPosition, _endPosition, _runMachine.lerpTime);
+        transformPosition.z = -needleHeightCurve.Evaluate(Mathf.Clamp(_runMachine.lerpTime, 0, 1));
+        transform.position = transformPosition;
     }
 
     public List<Vector3> GetThreadPositionInWorldSpace()
