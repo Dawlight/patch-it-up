@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class Sew : MonoBehaviour
 {
-    private float _timeToReverse;
-    private float _currentNeedleTime;
     private Vector3 _startPosition;
     private Vector3 _endPosition;
     private RunMachine _runMachine;
@@ -16,8 +14,6 @@ public class Sew : MonoBehaviour
 
     void Start()
     {
-        _timeToReverse = 0.5f;
-        _currentNeedleTime = 0;
         var position = transform.position;
         _startPosition = position + Vector3.left * stichWidth;
         _endPosition = position + Vector3.right * stichWidth;
@@ -38,26 +34,21 @@ public class Sew : MonoBehaviour
     {
         if (!_runMachine.isRunning) return;
 
-        _currentNeedleTime += Time.deltaTime;
-        var t = _currentNeedleTime / _timeToReverse;
-
         threadPoints[threadPoints.Count - 1] = _runMachine.transform.localPosition;
         lineRenderer.SetPosition(threadPoints.Count -1, _runMachine.transform.localPosition);
 
-        if (_currentNeedleTime >= _timeToReverse)
+        if (_runMachine.hasCompletedCycle)
         {
             threadPoints.Add(_runMachine.transform.localPosition);
             lineRenderer.positionCount = threadPoints.Count;
             lineRenderer.SetPositions(threadPoints.ToArray());
 
-            _currentNeedleTime = 0;
             var tempPosition = _startPosition;
             _startPosition = _endPosition;
             _endPosition = tempPosition;
-            t = 0;
         }
 
-        transform.position = Vector3.Lerp(_startPosition, _endPosition, t);
+        transform.position = Vector3.Lerp(_startPosition, _endPosition, _runMachine.lerpTime);
     }
 
     public List<Vector3> GetThreadPositionInWorldSpace()

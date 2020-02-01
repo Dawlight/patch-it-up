@@ -13,13 +13,19 @@ public class RotateCloth : MonoBehaviour
 
     void Update()
     {
+        var currentSpeed = 0f;
+
         if (Input.GetKey(KeyCode.RightArrow))
         {
-            transform.RotateAround(runMachine.transform.position, Vector3.back, speed * Time.deltaTime);    
+            currentSpeed = 1;
         }
         else if (Input.GetKey(KeyCode.LeftArrow))
         {
-            transform.RotateAround(runMachine.transform.position, Vector3.forward, speed * Time.deltaTime);
+            currentSpeed = -1;
         }
+
+        currentSpeed += Input.mouseScrollDelta.y - Input.mouseScrollDelta.x;
+        currentSpeed *= speed;
+        transform.RotateAround(runMachine.transform.position, Vector3.forward, currentSpeed * Time.deltaTime);
     }
 }
